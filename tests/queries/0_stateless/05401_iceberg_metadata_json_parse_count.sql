@@ -3,7 +3,7 @@
 -- Tag no-replicated-database: the replicated DDL worker evaluates the `IcebergLocal` arguments without the session, so it does not see the `TEMPORARY TABLE iceberg_path`
 
 -- Counts how many times `metadata.json` is parsed per SELECT from an Iceberg table.
--- The metadata files cache stores the raw string, so every `getMetadataJSONObject` call parses it again:
+-- The metadata files cache stores the parsed object, avoiding repeated parsing by:
 -- `getState`, `buildStorageMetadataFromState`, `getRelevantDataSnapshotFromTableStateSnapshot`,
 -- and for a trivial `count` a second `getRelevantState` from `totalRows`.
 -- Query shapes match q01-q03 of the CI-logs profiling report; the table settings match those tables.

@@ -3,6 +3,7 @@
 #if USE_AVRO
 
 #include <Storages/ObjectStorage/DataLakes/Iceberg/IcebergMetadataFilesCache.h>
+#include <Common/ElapsedTimeProfileEventIncrement.h>
 #include <Common/ProfileEvents.h>
 #include <Poco/JSON/Parser.h>
 
@@ -10,6 +11,7 @@ namespace ProfileEvents
 {
     extern const Event IcebergMetadataJSONParses;
     extern const Event IcebergMetadataJSONParsedBytes;
+    extern const Event IcebergMetadataJSONParseMicroseconds;
 }
 
 namespace DB::Iceberg
@@ -22,6 +24,7 @@ Poco::JSON::Object::Ptr parseMetadataJSON(const String & json_body)
 {
     ProfileEvents::increment(ProfileEvents::IcebergMetadataJSONParses);
     ProfileEvents::increment(ProfileEvents::IcebergMetadataJSONParsedBytes, json_body.size());
+    ProfileEventTimeIncrement<Microseconds> watch(ProfileEvents::IcebergMetadataJSONParseMicroseconds);
     Poco::JSON::Parser parser;
     return parser.parse(json_body).extract<Poco::JSON::Object::Ptr>();
 }
